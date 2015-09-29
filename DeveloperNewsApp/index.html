@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="js/mui.min.js"></script>
+		<link href="css/mui.min.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 id="title" class="mui-title">开发者新闻</h1>
+		</header>
+		<nav class="mui-bar mui-bar-tab" style="font-size: 13px; text-align: center;">
+			<a id="defaultTab" class="mui-tab-item   mui-active" href="ZiXunMap.html">
+				&nbsp;<span class="fa fa-phone"></span>
+				<br />
+				<span class="mui-tab-label">博客园</span>
+			</a>
+			<a class="mui-tab-item" href="PingCeList.html">
+				&nbsp;<span class="fa fa-pencil-square-o"></span>
+				<br />
+				<span class="mui-tab-label">Infoq(未完成)</span>
+			</a>
+			<a class="mui-tab-item" href="SheZhiList.html">
+				&nbsp;<span class="fa fa-user"></span>
+				<br />
+				<span class="mui-tab-label">36kr(未完成)</span>
+			</a>
+		</nav>
+		<script type="text/javascript" charset="utf-8">
+			mui.init({
+				gestureConfig: {
+					doubletap: true
+				},
+				subpages: [{
+					id: 'list',
+					url: 'list.html',
+					styles: {
+						top: '45px',
+						bottom: '45px',
+						bounce: 'vertical'
+					}
+				}]
+			});
+			var contentWebview = null;
+			document.querySelector('header').addEventListener('doubletap', function() {
+				if (contentWebview == null) {
+					contentWebview = plus.webview.currentWebview().children()[0];
+				}
+				if (mui.os.ios) {
+					contentWebview.evalJS("mui('#pullrefresh').pullRefresh().scrollTo(0,0,100)");
+				} else {
+					contentWebview.evalJS('mui.scrollTo(0, 100)');
+				}
+			});
+		</script>
+	</body>
+
+</html>

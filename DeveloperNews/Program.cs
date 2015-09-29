@@ -30,9 +30,7 @@ namespace DeveloperNews
         }
         static void cnblogs()
         {
-            var db = dbFactory.Open();
-            var checkData = db.Scalar<string>("select news_title from allen_news where from_site_flag = 0 order by news_id desc limit 0,1");
-            db.Dispose();
+
             CQ doc;
             try
             {
@@ -43,17 +41,21 @@ namespace DeveloperNews
             }
             catch (Exception ex)
             {
+                Thread.Sleep(GetWaitTime());
+                cnblogs();
                 return;
             }
             var arr = doc[".post_item_body"].ToList();
             var dataList = new List<allen_news>();
-            foreach(var item in arr)
+            var db = dbFactory.Open();
+            foreach (var item in arr)
             {
                 var str = item.InnerText;
                 var strArr = str.Split(Environment.NewLine.ToCharArray(),StringSplitOptions.RemoveEmptyEntries);
                 var data = new allen_news();
                 data.news_title = strArr[0];
-                if(data.news_title == checkData)
+                var checkData = db.ScalarFmt<long>("select count(*) from allen_news where news_title = {0}", data.news_title);
+                if (checkData > 0)
                 {
                     break;
                 }
@@ -64,8 +66,10 @@ namespace DeveloperNews
                 data.news_url = ((CQ)item.InnerHTML)["h3 a"].Attr("href");
                 dataList.Insert(0, data);
             }
-            db = dbFactory.Open();
-            db.InsertAll<allen_news>(dataList);
+            if(dataList.Count >0)
+            {
+                db.InsertAll<allen_news>(dataList);
+            }
             db.Dispose();
             Console.WriteLine("增加了{0}条文章", dataList.Count);
             Thread.Sleep(GetWaitTime());

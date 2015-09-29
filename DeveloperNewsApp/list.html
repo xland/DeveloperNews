@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<style>
+			.mui-table-view-cell:after {
+				position: absolute;
+				right: 0px;
+				bottom: 0;
+				left: 0px;
+				height: 1px;
+				content: '';
+				-webkit-transform: scaleY(.5);
+				transform: scaleY(.5);
+				background-color: #c8c7cc;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul class="mui-table-view" id="container">
+					<div id="itemTemplate" style="display: none;">
+						<li class="mui-table-view-cell mui-collapse">
+							<a class="article-title" class="mui-navigate-right" style="font-size: 14px;" href="#"></a>
+							<div style="font-size: 12px;" class="mui-collapse-content">
+								<div class="article-summary"></div>
+								<div style="text-align: right;">
+									<a class="article-link" href="javascript:">查看全文</a>
+								</div>
+							</div>
+						</li>
+					</div>
+				</ul>
+			</div>
+		</div>
+		<script type="text/javascript" charset="utf-8">
+			mui.init({
+				swipeBack: true, //启用右滑关闭功能
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						callback: pulldownRefresh
+					},
+					up: {
+						callback: pullupRefresh
+					}
+				}
+			});
+
+			function viewArticle(href) {
+				plus.webview.open(href, "articleView", {
+					top: '45px',
+					bottom: '45px'
+				});
+			}
+			var firstId = 0;
+			var lastId = 0;
+			var url = 'http://shumanu.com/';
+
+			function pulldownRefresh() {
+				var temp = "";
+				if (firstId != 0) {
+					temp = "Default.aspx?Action=PullDown&Id=" + firstId
+				} 
+				mui.get(url + temp, {}, function(data) {
+					if (data.length < 1) {
+						return;
+					}
+					var container = $("#container");
+					var li = $("#itemTemplate");
+					firstId = data[0].news_id;
+					if (lastId == 0) {
+						lastId = data[data.length - 1].news_id;
+					}
+					for (var i = 0; i < data.length; i++) {
+						li.find(".article-title").text(data[i].news_title);
+						li.find(".article-summary").text(data[i].news_summary);
+						li.find(".article-link").attr("href", "javascript:viewArticle('" + data[i].news_url + "');");
+						container.prepend(li.html());
+					}
+				}, 'json');
+				mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+			}
+
+			function pullupRefresh() {
+				mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+				var temp = "";
+				if (lastId != 0) {
+					temp = "Default.aspx?Action=PullUp&Id=" + lastId
+				}
+				mui.get(url + temp, {}, function(data) {
+					if (data.length < 1) {
+						mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+						return;
+					}
+					var container = $("#container");
+					var li = $("#itemTemplate");
+					lastId = data[data.length - 1].news_id;
+					if (firstId == 0) {
+						firstId = data[0].news_id;
+					}
+					for (var i = 0; i < data.length; i++) {
+						li.find(".article-title").text(data[i].news_title);
+						li.find(".article-summary").text(data[i].news_summary);
+						li.find(".article-link").attr("href", "javascript:viewArticle('" + data[i].news_url + "');");
+						container.append(li.html());
+					}
+				}, 'json');
+			}
+			if (mui.os.plus) {
+				mui.plusReady(function() {
+					mui.back = function() {
+						if (plus.webview.getWebviewById("articleView")) {
+							plus.webview.close("articleView");
+							return;
+						}
+						plus.runtime.quit();
+					}
+					setTimeout(function() {
+						mui('#pullrefresh').pullRefresh().pullupLoading();
+					}, 1000);
+				});
+			} else {
+				mui.ready(function() {
+					mui('#pullrefresh').pullRefresh().pullupLoading();
+				});
+			}
+		</script>
+	</body>
+
+</html>
