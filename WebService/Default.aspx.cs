@@ -19,21 +19,31 @@ namespace WebService
             dbFactory = new OrmLiteConnectionFactory(ConfigurationManager.AppSettings["dbConnStr"], MySqlDialect.Provider);            
             var action = Request["Action"];
             var id = Request["Id"];
-            List<allen_news> result = null;
-            var db = dbFactory.Open();
+            List<allen_news> result = null;            
             if (action == "PullDown")
             {
+                var db = dbFactory.Open();
                 result = db.SelectFmt<allen_news>("select * from allen_news where news_id > {0} order by news_id desc limit 0,30",id);
+                db.Dispose();
             }
             else if(action == "PullUp")
             {
+                var db = dbFactory.Open();
                 result = db.SelectFmt<allen_news>("select * from allen_news where news_id < {0} order by news_id desc limit 0,30", id);
+                db.Dispose();
+            }
+            else if(action == "CheckVersion")
+            {
+                Response.Write("1.0.0");
+                Response.End();
+                return;
             }
             else
             {
+                var db = dbFactory.Open();
                 result = db.Select<allen_news>("select * from allen_news order by news_id desc limit 0,30");
+                db.Dispose();
             }
-            db.Dispose();
             Response.Write(JsonConvert.SerializeObject(result));
             Response.End();
         }

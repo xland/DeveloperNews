@@ -29,7 +29,7 @@
 				<ul class="mui-table-view" id="container">
 					<div id="itemTemplate" style="display: none;">
 						<li class="mui-table-view-cell mui-collapse">
-							<a class="article-title" class="mui-navigate-right" style="font-size: 14px;" href="#"></a>
+							<a class="article-title" class="mui-navigate-right" style="font-size: 12px;" href="#"></a>
 							<div style="font-size: 12px;" class="mui-collapse-content">
 								<div class="article-summary"></div>
 								<div style="text-align: right;">
@@ -58,7 +58,7 @@
 			function viewArticle(href) {
 				plus.webview.open(href, "articleView", {
 					top: '45px',
-					bottom: '45px'
+					bottom: '0px'
 				});
 			}
 			var firstId = 0;
@@ -72,6 +72,7 @@
 				} 
 				mui.get(url + temp, {}, function(data) {
 					if (data.length < 1) {
+						mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
 						return;
 					}
 					var container = $("#container");
