@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Configuration;
 using Entity;
-
+using System.Net;
+using System.IO;
 
 namespace DeveloperNews
 {
@@ -19,6 +20,9 @@ namespace DeveloperNews
         static void Main(string[] args)
         {
             dbFactory = new OrmLiteConnectionFactory(ConfigurationManager.AppSettings["dbConnStr"], MySqlDialect.Provider);
+
+            var Tcto51 = new Thread(new ThreadStart(cto51));
+            Tcto51.Start();
 
             var Tkr36 = new Thread(new ThreadStart(kr36));
             Tkr36.Start();
@@ -48,6 +52,53 @@ namespace DeveloperNews
                 return true;
             }
             return false;
+        }
+        static void cto51()
+        {
+            CQ doc;
+            try
+            {
+                HttpWebRequest request = WebRequest.Create("http://www.51cto.com/recommnews/list1.htm") as HttpWebRequest;
+                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                Stream stream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(stream, Encoding.Default);
+                string html = reader.ReadToEnd();
+                stream.Close();
+                doc = html;
+            }
+            catch (Exception ex)
+            {
+                Thread.Sleep(GetWaitTime());
+                cto51();
+                return;
+            }
+            var arr = doc[".list-li"].ToList();
+            var dataList = new List<allen_news>();
+            var db = dbFactory.Open();
+            foreach (var item in arr)
+            {
+                CQ target = item.InnerHTML;
+                var data = new allen_news();
+                data.news_title = target[".pic a"].Text().Trim();
+                if (checkTitle(data.news_title))
+                {
+                    continue;
+                }
+                data.news_summary = target[".cont .info"].Text().Trim();
+                data.author = "";
+                data.add_time = DateTime.Now;
+                data.from_site_flag = 4;
+                data.news_url = target[".pic a"].Attr("href");
+                dataList.Insert(0, data);
+            }
+            if (dataList.Count > 0)
+            {
+                db.InsertAll<allen_news>(dataList);
+            }
+            db.Dispose();
+            Console.WriteLine("增加了{0}条文章4", dataList.Count);
+            Thread.Sleep(GetWaitTime());
+            cto51();
         }
 
         static void kr36()
