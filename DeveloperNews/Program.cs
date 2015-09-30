@@ -21,6 +21,9 @@ namespace DeveloperNews
         {
             dbFactory = new OrmLiteConnectionFactory(ConfigurationManager.AppSettings["dbConnStr"], MySqlDialect.Provider);
 
+            var Tcsdn = new Thread(new ThreadStart(csdn));
+            Tcsdn.Start();
+
             var Tcto51 = new Thread(new ThreadStart(cto51));
             Tcto51.Start();
 
@@ -52,6 +55,50 @@ namespace DeveloperNews
                 return true;
             }
             return false;
+        }
+        static void csdn()
+        {
+            CQ doc;
+            try
+            {
+                var client = new RestClient("http://news.csdn.net/");
+                var resq = new RestRequest(Method.GET);
+                var resp = client.Execute(resq);
+                doc = resp.Content;
+            }
+            catch (Exception ex)
+            {
+                Thread.Sleep(GetWaitTime());
+                csdn();
+                return;
+            }
+            var arr = doc[".news .unit"].ToList();
+            var dataList = new List<allen_news>();
+            var db = dbFactory.Open();
+            foreach (var item in arr)
+            {
+                CQ target = item.InnerHTML;
+                var data = new allen_news();
+                data.news_title = target["h1 a"].Text().Trim();
+                if (checkTitle(data.news_title))
+                {
+                    continue;
+                }
+                data.news_summary = target["dd"].Text().Trim();
+                data.author = "";
+                data.add_time = DateTime.Now;
+                data.from_site_flag = 5;
+                data.news_url = target["h1 a"].Attr("href");
+                dataList.Insert(0, data);
+            }
+            if (dataList.Count > 0)
+            {
+                db.InsertAll<allen_news>(dataList);
+            }
+            db.Dispose();
+            Console.WriteLine("增加了{0}条文章5", dataList.Count);
+            Thread.Sleep(GetWaitTime());
+            csdn();
         }
         static void cto51()
         {
