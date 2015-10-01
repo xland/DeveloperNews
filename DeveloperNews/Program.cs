@@ -225,7 +225,11 @@ namespace DeveloperNews
                 data.author = target[".date a"].Text().Trim();
                 data.add_time = DateTime.Now;
                 data.from_site_flag = 2;
-                data.news_url = "http://www.oschina.net" + target["h2 a"].Attr("href");
+                data.news_url = target["h2 a"].Attr("href");
+                if(!data.news_url.StartsWith("http://www.oschina.net"))
+                {
+                    data.news_url = "http://www.oschina.net" + data.news_url;
+                }
                 dataList.Insert(0, data);
             }
             if (dataList.Count > 0)

@@ -56,14 +56,18 @@
 			});
 
 			function viewArticle(href) {
-				plus.webview.open(href, "articleView", {
+				var waitingWindow = plus.nativeUI.toast("页面正在加载，需要稍等一会儿");
+				var obj = plus.webview.open(href, "articleView", {
 					top: '45px',
-					bottom: '0px'
+					bottom: '0px',
+					scalable:true
 				});
 			}
 			var firstId = 0;
 			var lastId = 0;
+			var loadFlag = true;
 			var url = 'http://shumanu.com/';
+			var version = "1.0.2";
 
 			function pulldownRefresh() {
 				var temp = "";
@@ -102,6 +106,18 @@
 						mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
 						return;
 					}
+					if(loadFlag){
+						plus.navigator.closeSplashscreen();
+						mui.get('http://shumanu.com/Default.aspx?Action=CheckVersion', {}, function(data) {
+							if(data != version){
+								var flag = confirm("有新版本，是否更新");
+								if(flag){
+									plus.runtime.openURL("http://shumanu.com/DeveloperNews.apk");
+								}							
+							}
+						}); 
+						loadFlag = false;
+					}
 					var container = $("#container");
 					var li = $("#itemTemplate");
 					lastId = data[data.length - 1].news_id;
@@ -125,6 +141,7 @@
 						}
 						plus.runtime.quit();
 					}
+					
 					setTimeout(function() {
 						mui('#pullrefresh').pullRefresh().pullupLoading();
 					}, 1000);

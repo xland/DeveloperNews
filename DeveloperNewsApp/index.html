@@ -12,7 +12,7 @@
 			<h1 id="title" class="mui-title">开发者新闻</h1>
 		</header>
 		<script type="text/javascript" charset="utf-8">
-			var version = "1.0.0"
+			
 			mui.init({
 				gestureConfig: {
 					doubletap: true
@@ -27,18 +27,6 @@
 					}
 				}]
 			});
-			if (mui.os.plus) {
-				mui.plusReady(function() {
-					mui.getJSON('http://shumanu.com/Default.aspx?Action=CheckVersion', {}, function(data) {
-						if(data != version){
-							var flag = confirm("有新版本，是否更新");
-							if(flag){
-								plus.runtime.openURL("http://shumanu.com/DeveloperNews.apk");
-							}							
-						}
-					});
-				})
-			}
 		</script>
 	</body>
 

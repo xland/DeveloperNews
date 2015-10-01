@@ -3,7 +3,7 @@
 	"id": "H50FD57E6",/*应用的标识，创建应用时自动生成，勿手动修改*/
 	"name": "开发者新闻",/*应用名称，程序桌面图标名称*/
 	"version": {
-		"name": "1.0.0",/*应用版本名称*/
+		"name": "1.0.2",/*应用版本名称*/
 		"code": "83"
 	},
 	"description": "",/*应用描述信息*/
@@ -103,8 +103,8 @@
 	},
 	"plus": {
 		"splashscreen": {
-			"autoclose": true,/*是否自动关闭程序启动界面，true表示应用加载应用入口页面后自动关闭；false则需调plus.navigator.closeSplashscreen()关闭*/
-			"waiting": true,"delay":"600"
+			"autoclose": false,/*是否自动关闭程序启动界面，true表示应用加载应用入口页面后自动关闭；false则需调plus.navigator.closeSplashscreen()关闭*/
+			"waiting": false,"delay":"600"
 		},
 		"runmode": "liberate",/*应用的首次启动运行模式，可取liberate或normal，liberate模式在第一次启动时将解压应用资源（Android平台File API才可正常访问_www目录）*/
 		"signature": "Sk9JTiBVUyBtYWlsdG86aHIyMDEzQGRjbG91ZC5pbw==",/*可选，保留给应用签名，暂不使用*/
@@ -180,9 +180,9 @@
 				},
 				"android": {
 					"mdpi": "", /*普通屏启动图片，分辨率：240x282*/
-					"ldpi": "", /*大屏启动图片，分辨率：320x442*/
-					"hdpi": "", /*高分屏启动图片，分辨率：480x762*/
-					"xhdpi": "", /*720P高分屏启动图片，分辨率：720x1242*/
+					"ldpi": "D:/project/DeveloperNews/设计稿/闪屏320-442.png", /*大屏启动图片，分辨率：320x442*/
+					"hdpi": "D:/project/DeveloperNews/设计稿/闪屏480-762.png", /*高分屏启动图片，分辨率：480x762*/
+					"xhdpi": "D:/project/DeveloperNews/设计稿/闪屏720-1242.png", /*720P高分屏启动图片，分辨率：720x1242*/
 					"xxhdpi": "D:/project/DeveloperNews/设计稿/splash.png"
 				}
 			}

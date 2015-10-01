@@ -34,7 +34,7 @@ namespace WebService
             }
             else if(action == "CheckVersion")
             {
-                Response.Write("1.0.0");
+                Response.Write("1.0.2");
                 Response.End();
                 return;
             }
