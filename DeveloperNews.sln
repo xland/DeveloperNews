@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebService", "WebService\We
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entity", "Entity\Entity.csproj", "{EABE0240-E835-40AC-AB03-512A5A6B52A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperNewsWatcher", "DeveloperNewsWatcher\DeveloperNewsWatcher.csproj", "{97899148-F5AF-462A-B014-4735C915A3FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{EABE0240-E835-40AC-AB03-512A5A6B52A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EABE0240-E835-40AC-AB03-512A5A6B52A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EABE0240-E835-40AC-AB03-512A5A6B52A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97899148-F5AF-462A-B014-4735C915A3FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97899148-F5AF-462A-B014-4735C915A3FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97899148-F5AF-462A-B014-4735C915A3FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97899148-F5AF-462A-B014-4735C915A3FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

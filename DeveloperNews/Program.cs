@@ -11,14 +11,18 @@ using System.Configuration;
 using Entity;
 using System.Net;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace DeveloperNews
 {
     class Program
     {
+
         static OrmLiteConnectionFactory dbFactory;
+        //注意！！！当前程序集的输出类型是windows应用程序，所以输出之后是看不到窗口界面的！
         static void Main(string[] args)
         {
+
             dbFactory = new OrmLiteConnectionFactory(ConfigurationManager.AppSettings["dbConnStr"], MySqlDialect.Provider);
 
             var Tcsdn = new Thread(new ThreadStart(csdn));
