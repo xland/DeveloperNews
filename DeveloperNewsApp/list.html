@@ -22,28 +22,27 @@
 			}
 		</style>
 	</head>
-
 	<body>
 		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
 			<div class="mui-scroll">
 				<ul class="mui-table-view" id="container">
 					<div id="itemTemplate" style="display: none;">
-						<li class="mui-table-view-cell mui-collapse">
-							<a class="article-title" class="mui-navigate-right" style="font-size: 12px;" href="#"></a>
-							<div style="font-size: 12px;" class="mui-collapse-content">
-								<div class="article-summary"></div>
-								<div style="text-align: right;">
-									<a class="article-link" href="javascript:">查看全文</a>
-								</div>
+						<li class="mui-table-view-cell" style="font-size: 12px;">
+							<div style="font-size: 12px;color: blue;">
+								<a class="article-title"></a>
+							</div>
+							<div class="article-summary" href="">
 							</div>
 						</li>
 					</div>
 				</ul>
 			</div>
 		</div>
+		<div id="selectUrl" style="display: none;">
+			<input id="selectUrlInput" type="text" />
+		</div>
 		<script type="text/javascript" charset="utf-8">
 			mui.init({
-				swipeBack: true, //启用右滑关闭功能
 				pullRefresh: {
 					container: '#pullrefresh',
 					down: {
@@ -52,6 +51,23 @@
 					up: {
 						callback: pullupRefresh
 					}
+				},
+				gestureConfig: {
+					tap: true, //默认为true
+					doubletap: true, //默认为false
+					longtap: true, //默认为false
+					swipe: true, //默认为true
+					drag: true, //默认为true
+					hold: false, //默认为false，不监听
+					release: false //默认为false，不监听
+				}
+			});
+
+			mui(".mui-table-view").on('longtap', '.article-summary', function() {
+				var url = this.getAttribute("href");
+				var flag = confirm("用本地浏览器打开当前文章？");
+				if(flag){
+					plus.runtime.openURL(url);
 				}
 			});
 
@@ -60,20 +76,20 @@
 				var obj = plus.webview.open(href, "articleView", {
 					top: '45px',
 					bottom: '0px',
-					scalable:true
+					scalable: true
 				});
 			}
 			var firstId = 0;
 			var lastId = 0;
 			var loadFlag = true;
 			var url = 'http://shumanu.com/';
-			var version = "1.0.2";
+			var version = "1.0.3";
 
 			function pulldownRefresh() {
 				var temp = "";
 				if (firstId != 0) {
 					temp = "Default.aspx?Action=PullDown&Id=" + firstId
-				} 
+				}
 				mui.get(url + temp, {}, function(data) {
 					if (data.length < 1) {
 						mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
@@ -86,9 +102,8 @@
 						lastId = data[data.length - 1].news_id;
 					}
 					for (var i = 0; i < data.length; i++) {
-						li.find(".article-title").text(data[i].news_title);
-						li.find(".article-summary").text(data[i].news_summary);
-						li.find(".article-link").attr("href", "javascript:viewArticle('" + data[i].news_url + "');");
+						li.find(".article-title").text(data[i].news_title).attr("href", "javascript:viewArticle('" + data[i].news_url + "');");
+						li.find(".article-summary").text(data[i].news_summary).attr("href", data[i].news_url);
 						container.prepend(li.html());
 					}
 				}, 'json');
@@ -106,16 +121,16 @@
 						mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
 						return;
 					}
-					if(loadFlag){
+					if (loadFlag) {
 						plus.navigator.closeSplashscreen();
-						mui.get('http://shumanu.com/Default.aspx?Action=CheckVersion', {}, function(data) {
-							if(data != version){
+						mui.get(url + 'Default.aspx?Action=CheckVersion', {}, function(data) {
+							if (data != version) {
 								var flag = confirm("有新版本，是否更新");
-								if(flag){
-									plus.runtime.openURL("http://shumanu.com/DeveloperNews.apk");
-								}							
+								if (flag) {
+									plus.runtime.openURL(url + "DeveloperNews.apk");
+								}
 							}
-						}); 
+						});
 						loadFlag = false;
 					}
 					var container = $("#container");
@@ -125,9 +140,8 @@
 						firstId = data[0].news_id;
 					}
 					for (var i = 0; i < data.length; i++) {
-						li.find(".article-title").text(data[i].news_title);
-						li.find(".article-summary").text(data[i].news_summary);
-						li.find(".article-link").attr("href", "javascript:viewArticle('" + data[i].news_url + "');");
+						li.find(".article-title").text(data[i].news_title).attr("href", "javascript:viewArticle('" + data[i].news_url + "');");
+						li.find(".article-summary").text(data[i].news_summary).attr("href", data[i].news_url);
 						container.append(li.html());
 					}
 				}, 'json');
@@ -141,7 +155,6 @@
 						}
 						plus.runtime.quit();
 					}
-					
 					setTimeout(function() {
 						mui('#pullrefresh').pullRefresh().pullupLoading();
 					}, 1000);
