@@ -1,19 +1,17 @@
 ﻿using CsQuery;
+using Entity;
 using RestSharp;
 using ServiceStack.OrmLite;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Configuration;
-using Entity;
-using System.Net;
 using System.IO;
-using System.Runtime.InteropServices;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading;
 
-namespace DeveloperNews
+namespace DeveloperNews2
 {
     class Program
     {
@@ -230,7 +228,7 @@ namespace DeveloperNews
                 data.add_time = DateTime.Now;
                 data.from_site_flag = 2;
                 data.news_url = target["h2 a"].Attr("href");
-                if(!data.news_url.StartsWith("http://www.oschina.net"))
+                if (!data.news_url.StartsWith("http://"))
                 {
                     data.news_url = "http://www.oschina.net" + data.news_url;
                 }
@@ -277,7 +275,7 @@ namespace DeveloperNews
                 data.author = target[".author a"].Text().Trim();
                 data.add_time = DateTime.Now;
                 data.from_site_flag = 1;
-                data.news_url = "http://www.infoq.com"+target["h2 a"].Attr("href");
+                data.news_url = "http://www.infoq.com" + target["h2 a"].Attr("href");
                 dataList.Insert(0, data);
             }
             if (dataList.Count > 0)
@@ -311,7 +309,7 @@ namespace DeveloperNews
             foreach (var item in arr)
             {
                 var str = item.InnerText;
-                var strArr = str.Split(Environment.NewLine.ToCharArray(),StringSplitOptions.RemoveEmptyEntries);
+                var strArr = str.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                 var data = new allen_news();
                 data.news_title = strArr[0];
                 if (checkTitle(data.news_title))
@@ -319,13 +317,13 @@ namespace DeveloperNews
                     continue;
                 }
                 data.news_summary = strArr[1].Trim();
-                data.author = strArr[2].Split("发布于".ToCharArray(),StringSplitOptions.RemoveEmptyEntries)[0];
+                data.author = strArr[2].Split("发布于".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0];
                 data.add_time = DateTime.Now;
                 data.from_site_flag = 0;
                 data.news_url = ((CQ)item.InnerHTML)["h3 a"].Attr("href");
                 dataList.Insert(0, data);
             }
-            if(dataList.Count >0)
+            if (dataList.Count > 0)
             {
                 db.InsertAll<allen_news>(dataList);
             }

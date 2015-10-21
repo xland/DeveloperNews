@@ -16,23 +16,25 @@ namespace DeveloperNewsWatcher
         }
         static void Watcher()
         {
-            var arr = Process.GetProcessesByName("DeveloperNews");
-            if(arr.Length < 1)
+            while(true)
             {
-                try
+                var arr = Process.GetProcessesByName("DeveloperNews2");
+                if (arr.Length < 1)
                 {
-                    Process process = new Process();
-                    process.StartInfo.FileName = "DeveloperNews.exe";
-                    process.Start();
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                    try
+                    {
+                        Process process = new Process();
+                        process.StartInfo.FileName = "DeveloperNews2.exe";
+                        process.Start();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
 
+                }
+                Thread.Sleep(6000);
             }
-            Thread.Sleep(6000);
-            Watcher();
         }
     }
 }
