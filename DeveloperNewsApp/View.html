@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="js/mui.min.js"></script>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/font-awesome.min.css" rel="stylesheet" />
+		<script src="js/jquery-2.1.4.min.js"></script>
+		<style>
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+			}
+			.title {
+				font-size: 26px;
+				color: #FAFAFA;
+				line-height: 36px;
+				background: #0062CC;
+				padding: 12px;
+			}
+			.des {
+				padding: 12px;
+				font-size: 20px;
+				line-height: 30px;
+				color: #6c6c6c;
+				word-wrap: break-all;
+			}
+			.container {
+				position: absolute;
+				top: 50px;
+				left: 30px;
+				right: 30px;
+				border: 1px solid #0062CC;
+				border-radius: 6px;
+				overflow: hidden;
+				box-shadow: 2px 2px 2px #999;
+				display: none;
+				z-index: 99;
+			}
+			.containerTemplage {
+				position: absolute;
+				left: 30px;
+				right: 30px;
+				border: 1px solid #0062CC;
+				border-radius: 6px;
+				overflow: hidden;
+				box-shadow: 2px 2px 2px #999;
+				display: none;
+			}
+			.bar {
+				height: 36px;
+				text-align: center;
+				border-top: 1px dotted #CCCCCC;
+			}
+			.iconbtn {
+				width: 36px;
+				height: 36px;
+				font-size: 20px;
+				line-height: 36px;
+				color: #0062CC;
+				display: inline-block;
+				text-align: center;
+			}
+			.grayBtn {
+				color: #CCCCCC;
+			}
+			#copyRight{
+				position: absolute;
+				text-align: center;
+				bottom: 0px;
+				font-size: 12px;
+				left: 0px;
+				right: 0px;
+				color: #CCCCCC;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="news"></div>
+		<div id="templage">
+			<div class="container">
+				<div class="title"></div>
+				<div class="des"></div>
+				<div class="bar">
+					<div class="iconbtn grayBtn">
+						<i class="fa fa-commenting-o"></i>
+					</div>
+					<div class="iconbtn grayBtn">
+						<i class="fa fa-times"></i>
+					</div>
+					<div class="iconbtn grayBtn">
+						<i class="fa fa-heart"></i>
+					</div>
+					<div class="iconbtn openDetail">
+						<i class="fa fa-external-link"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="copyRight">CopyRight &copy; 2015 cnblogs.com/liulun</div>
+		<script type="text/javascript" charset="utf-8">
+			var index = 0;
+			var lastId;
+			var lastIndex = 0;
+			var pageSize = 8;
+			var dataArr = [];
+			var first;
+			var baseUrl = "http://shumanu.com";
+			mui.init({
+				gestureConfig: {
+					tap: true, //默认为true
+					doubletap: true, //默认为false
+					longtap: true, //默认为false
+					swipe: true, //默认为true
+					drag: true, //默认为true
+					hold: false, //默认为false，不监听
+					release: false //默认为false，不监听
+				}
+			});
+
+			function dragUp() {
+				$("#news" + index).fadeOut("slow");
+				index = index + 1;
+				$("#news" + index).fadeIn("slow");
+				if (index > 0 && index % pageSize == 0) {
+					getNextPage();
+				}
+			}
+
+			function dragDown() {
+				if (index == 0) {
+					plus.nativeUI.toast("已经是第一条新闻，马上为您刷新页面！");
+					window.location.href = "View.html";
+				}
+				$("#news" + index).fadeOut("slow");
+				index = index - 1;
+				$("#news" + index).fadeIn("slow");
+			}
+
+			function longTap(e) {
+				$("#bar").fadeIn("slow");
+			}
+
+			function prepareData(result) {
+				console.log(result.length);
+				for (var i = 0; i < result.length; i++) {
+					$("#templage .title").html(result[i].news_title);
+					$("#templage .des").html(result[i].news_summary);
+					$("#templage .container").attr("id", "news" + (lastIndex + i));
+					$("#templage .openDetail").attr("url", result[i].news_url)
+					var html = $("#templage").html();
+					$("#news").append(html);
+				}
+				lastId = result[result.length - 1].news_id;
+				$(".openDetail").click(function() {
+					var url = $(this).attr("url");
+					plus.runtime.openURL(url);
+				})
+			}
+
+			function getNextPage() {
+				console.log(lastId);
+				mui.getJSON(baseUrl + "/ViewService.aspx?Index=" + lastId, {}, function(result) {
+					prepareData(result);
+					lastIndex = lastIndex + result.length;
+				});
+			}
+
+			function getData() {
+				mui.getJSON(baseUrl + "/ViewService.aspx?Index=0", {}, function(result) {
+					prepareData(result);
+					lastIndex = result.length - 1;
+					$("#news0").show();
+				});
+			}
+
+			function updateAndroid(fPath) {
+				var date = new Date().getTime();
+				var fileN = "";
+				fileN = "_doc/dn_" + date + ".apk";
+				var options = {
+					method: "GET",
+					filename: fileN
+				};
+				var watiting = plus.nativeUI.showWaiting("开始下载：0%");
+				var dtask = plus.downloader.createDownload(fPath, options);
+				dtask.addEventListener("statechanged", function(task, status) {
+					if (!dtask) {
+						return;
+					}
+					switch (task.state) {
+						case 1: // 开始
+							break;
+						case 2: // 已连接到服务器
+							break;
+						case 3: // 已接收到数据
+							var nowData = Math.floor(task.downloadedSize * 100 / task.totalSize);
+							if (nowData % 10 == 0) {
+								watiting.setTitle("已下载：" + nowData + "%");
+								if (nowData == 100) {
+									plus.nativeUI.toast("正在准备环境，请稍后！");
+									plus.runtime.openFile(dtask.filename);
+									plus.runtime.quit();
+								}
+							}
+							break;
+						case 4: // 下载完成
+							break;
+					}
+				});
+				dtask.start();
+			}
+
+			function checkVersion() {
+				mui.get(baseUrl + '/Default.aspx?Action=CheckVersion', {}, function(data) {
+					if (data != plus.runtime.version) {
+						plus.nativeUI.confirm("有新版本，是否更新？", function(msg) {
+							if (msg.index == 1) {
+								if ('iOS' == plus.os.name) {
+									plus.runtime.openURL(baseUrl + "/update/ios.aspx");
+								} else {
+									updateAndroid(baseUrl+"/DeveloperNews.apk");
+								}
+							}
+						}, "友情提醒：", ["取消", "确定"]);
+					}
+				});
+			}
+			mui.plusReady(function() {
+				getData();
+				$("body")[0].addEventListener("dragup", dragUp);
+				$("body")[0].addEventListener("dragdown", dragDown);
+				$("body")[0].addEventListener("longtap", longTap);
+				plus.navigator.closeSplashscreen();
+				checkVersion();
+			});
+			mui.back = function() {
+				if (!first) {
+					first = new Date().getTime();
+					mui.toast('再按一次退出应用');
+					setTimeout(function() {
+						first = null;
+					}, 800);
+				} else {
+					if (new Date().getTime() - first < 800) {
+						plus.runtime.quit();
+					}
+				}
+			};
+		</script>
+	</body>
+
+</html>

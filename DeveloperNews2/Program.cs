@@ -58,6 +58,16 @@ namespace DeveloperNews2
             }
             return false;
         }
+        static void insertToDB(List<allen_news> dataList)
+        {
+            if (dataList.Count > 0)
+            {
+                var db = dbFactory.Open();
+                db.InsertAll<allen_news>(dataList);
+                db.Close();
+                db.Dispose();
+            }
+        }
         static void csdn()
         {
             CQ doc;
@@ -75,8 +85,7 @@ namespace DeveloperNews2
                 return;
             }
             var arr = doc[".news .unit"].ToList();
-            var dataList = new List<allen_news>();
-            var db = dbFactory.Open();
+            var dataList = new List<allen_news>();            
             foreach (var item in arr)
             {
                 CQ target = item.InnerHTML;
@@ -93,11 +102,7 @@ namespace DeveloperNews2
                 data.news_url = target["h1 a"].Attr("href");
                 dataList.Insert(0, data);
             }
-            if (dataList.Count > 0)
-            {
-                db.InsertAll<allen_news>(dataList);
-            }
-            db.Dispose();
+            insertToDB(dataList);
             Console.WriteLine("增加了{0}条文章5", dataList.Count);
             Thread.Sleep(GetWaitTime());
             csdn();
@@ -122,8 +127,7 @@ namespace DeveloperNews2
                 return;
             }
             var arr = doc[".list-li"].ToList();
-            var dataList = new List<allen_news>();
-            var db = dbFactory.Open();
+            var dataList = new List<allen_news>();            
             foreach (var item in arr)
             {
                 CQ target = item.InnerHTML;
@@ -140,11 +144,7 @@ namespace DeveloperNews2
                 data.news_url = target[".pic a"].Attr("href");
                 dataList.Insert(0, data);
             }
-            if (dataList.Count > 0)
-            {
-                db.InsertAll<allen_news>(dataList);
-            }
-            db.Dispose();
+            insertToDB(dataList);
             Console.WriteLine("增加了{0}条文章4", dataList.Count);
             Thread.Sleep(GetWaitTime());
             cto51();
@@ -168,7 +168,6 @@ namespace DeveloperNews2
             }
             var arr = doc["article .desc"].ToList();
             var dataList = new List<allen_news>();
-            var db = dbFactory.Open();
             foreach (var item in arr)
             {
                 CQ target = item.InnerHTML;
@@ -185,11 +184,7 @@ namespace DeveloperNews2
                 data.news_url = "http://36kr.com" + target[".title"].Attr("href");
                 dataList.Insert(0, data);
             }
-            if (dataList.Count > 0)
-            {
-                db.InsertAll<allen_news>(dataList);
-            }
-            db.Dispose();
+            insertToDB(dataList);
             Console.WriteLine("增加了{0}条文章3", dataList.Count);
             Thread.Sleep(GetWaitTime());
             kr36();
@@ -213,7 +208,6 @@ namespace DeveloperNews2
             }
             var arr = doc["#RecentNewsList .List li"].ToList();
             var dataList = new List<allen_news>();
-            var db = dbFactory.Open();
             foreach (var item in arr)
             {
                 CQ target = item.InnerHTML;
@@ -234,11 +228,7 @@ namespace DeveloperNews2
                 }
                 dataList.Insert(0, data);
             }
-            if (dataList.Count > 0)
-            {
-                db.InsertAll<allen_news>(dataList);
-            }
-            db.Dispose();
+            insertToDB(dataList);
             Console.WriteLine("增加了{0}条文章2", dataList.Count);
             Thread.Sleep(GetWaitTime());
             oschina();
@@ -261,7 +251,6 @@ namespace DeveloperNews2
             }
             var arr = doc[".news_type_block"].ToList();
             var dataList = new List<allen_news>();
-            var db = dbFactory.Open();
             foreach (var item in arr)
             {
                 CQ target = item.InnerHTML;
@@ -278,11 +267,7 @@ namespace DeveloperNews2
                 data.news_url = "http://www.infoq.com" + target["h2 a"].Attr("href");
                 dataList.Insert(0, data);
             }
-            if (dataList.Count > 0)
-            {
-                db.InsertAll<allen_news>(dataList);
-            }
-            db.Dispose();
+            insertToDB(dataList);
             Console.WriteLine("增加了{0}条文章1", dataList.Count);
             Thread.Sleep(GetWaitTime());
             infoq();
@@ -305,7 +290,6 @@ namespace DeveloperNews2
             }
             var arr = doc[".post_item_body"].ToList();
             var dataList = new List<allen_news>();
-            var db = dbFactory.Open();
             foreach (var item in arr)
             {
                 var str = item.InnerText;
@@ -323,11 +307,7 @@ namespace DeveloperNews2
                 data.news_url = ((CQ)item.InnerHTML)["h3 a"].Attr("href");
                 dataList.Insert(0, data);
             }
-            if (dataList.Count > 0)
-            {
-                db.InsertAll<allen_news>(dataList);
-            }
-            db.Dispose();
+            insertToDB(dataList);
             Console.WriteLine("增加了{0}条文章0", dataList.Count);
             Thread.Sleep(GetWaitTime());
             cnblogs();
